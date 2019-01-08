@@ -53,6 +53,13 @@ class GrouperAPI(GrouperClient):
             raise(GrouperAPIError(f"add_member - Unexpected result received: {metadata['resultCode']}"))
 
     def find_groups_by_stem(self, stem):
+        """ Retrieve child groups associated with a stem
+
+        Inputs:
+          stem - stem name, ex: org:test:somestem
+
+        Returns a list of groups
+        """
         params = {
             'WsRestFindGroupsRequest': {
                 'wsQueryFilter': {
@@ -73,6 +80,14 @@ class GrouperAPI(GrouperClient):
             raise(GrouperAPIError(f"find_groups_by_stem - Unexpected result received: {metadata['resultCode']}"))
 
     def find_groups_by_name(self, groupname, exact=None):
+        """ Retrieve groups by name
+
+        Inputs:
+          groupname - group name or substring to search for
+          exact - (optional) boolean True to search for exact groupname match
+
+        Returns a list of groups
+        """
         if exact == True:
             query_filter_type = 'FIND_BY_GROUP_NAME_EXACT'
         else:
@@ -97,8 +112,49 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"find_groups_by_name - Unexpected result received: {metadata['resultCode']}"))
 
+    def delete_groups(self, groupnames):
+        """ Delete groups
+
+        Inputs:
+          groupnames - list of group names to delete,
+                       ex: ['org:test:somegroup1', 'org:test:somegroup2']
+
+        Returns True on success, otherwise raises GrouperAPIError
+        """
+        if not len(groupnames) > 0:
+            raise(GrouperAPIError(f"delete_groups - No group names provided"))
+
+        params = {
+            'WsRestGroupDeleteRequest': {
+                'wsGroupLookups': []
+            }
+        }
+        for group in groupnames:
+            params['WsRestGroupDeleteRequest']['wsGroupLookups'].append({'groupName': group})
+        try:
+            result = self._post('groups', params)
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        metadata = result['WsGroupDeleteResults']['resultMetadata']
+
+        if metadata['resultCode'] == 'SUCCESS':
+            return True
+        else:
+            raise(GrouperAPIError(f"delete_groups - Unexpected result received: {metadata['resultCode']}"))
+
     def create_composite_group(self, *, leftgroup, rightgroup,
                                composite_type, description, newname):
+        """ Create a composite group
+
+        Inputs:
+          leftgroup - lefthand group name, ex: org:test:somegroup1
+          rightgroup - righthand group name, ex: org:test:somegroup2
+          composite_type - type of composite group, must be 'complement', 'intersection', 'union'
+          description - description of group
+          newname - name of the group to create, ex: org:test:newgroup
+
+        Returns True on success, otherwise raises GrouperAPIError
+        """
         if composite_type not in ['complement', 'intersection', 'union']:
             raise(GrouperAPIError(f"create_composite_group - Invalid composite_type '{composite_type}'"))
 

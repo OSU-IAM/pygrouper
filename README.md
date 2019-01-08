@@ -10,3 +10,4 @@ A simple Python 3 client for the Grouper Web Services API
 ## TODO
 
 * Package this module properly
+* Add more WS functions
