@@ -32,6 +32,28 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"is_member - Unexpected result received: {metadata['resultCode']}"))
 
+    def get_members(self, groupname):
+        """ Retrieve members of a group
+
+        Inputs:
+          groupname - group name to query, ex: org:test:somestem
+
+        Returns a list of subjects
+        """
+        try:
+            result = self._get(f"groups/{groupname}/members")
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        metadata = result['WsGetMembersLiteResult']['resultMetadata']
+
+        if metadata['resultCode'] == 'SUCCESS':
+            if 'wsSubjects' in result['WsGetMembersLiteResult']:
+                return result['WsGetMembersLiteResult']['wsSubjects']
+            else:
+                return []
+        else:
+            raise(GrouperAPIError(f"get_members - Unexpected result received: {metadata['resultCode']}"))
+
     def add_member(self, username, groupname):
         """ Add user as member to group
 
@@ -75,7 +97,10 @@ class GrouperAPI(GrouperClient):
         metadata = result['WsFindGroupsResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
-            return result['WsFindGroupsResults']['groupResults']
+            if 'groupResults' in result['WsFindGroupsResults']:
+                return result['WsFindGroupsResults']['groupResults']
+            else:
+                return []
         else:
             raise(GrouperAPIError(f"find_groups_by_stem - Unexpected result received: {metadata['resultCode']}"))
 
@@ -108,7 +133,10 @@ class GrouperAPI(GrouperClient):
         metadata = result['WsFindGroupsResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
-            return result['WsFindGroupsResults']['groupResults']
+            if 'groupResults' in result['WsFindGroupsResults']:
+                return result['WsFindGroupsResults']['groupResults']
+            else:
+                return []
         else:
             raise(GrouperAPIError(f"find_groups_by_name - Unexpected result received: {metadata['resultCode']}"))
 
