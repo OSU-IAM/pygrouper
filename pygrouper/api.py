@@ -220,7 +220,7 @@ class GrouperAPI(GrouperClient):
         metadata = result['WsGroupSaveResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
-            return result['WsGroupSaveResults']['results']
+            return True
         else:
             errmsg = (
                 'create_composite_group - '
