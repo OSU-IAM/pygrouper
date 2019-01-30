@@ -170,6 +170,47 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"delete_groups - Unexpected result received: {metadata['resultCode']}"))
 
+    def create_group(self, groupname, displayext, description):
+        """ Create a group
+
+        Inputs:
+          groupname - group name, ex: org:test:somegroup1
+          displayext - display name, ex: Some Group 1
+          description - description of group
+
+        Returns True on success, otherwise raises GrouperAPIError
+        """
+        params = {
+            'WsRestGroupSaveRequest': {
+                'wsGroupToSaves': [
+                    {
+                        'wsGroup': {
+                            'description': description,
+                            'displayExtension': displayext,
+                            'name': groupname
+                        },
+                        'wsGroupLookup': {
+                            'groupName': groupname
+                        }
+                    }
+                ]
+            }
+        }
+
+        try:
+            result = self._post('groups', params)
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        metadata = result['WsGroupSaveResults']['resultMetadata']
+
+        if metadata['resultCode'] == 'SUCCESS':
+            return True
+        else:
+            errmsg = (
+                'create_group - '
+                f"Unexpected result received: {metadata['resultCode']}")
+            raise(GrouperAPIError(errmsg))
+
     def create_composite_group(self, *, leftgroup, rightgroup,
                                composite_type, description, newname):
         """ Create a composite group
