@@ -49,5 +49,11 @@ class GrouperClient(object):
         r.raise_for_status()
         return r.json()
 
+    def _delete(self, endpoint):
+        uri = self._uri(endpoint)
+        r = requests.delete(uri, auth=(self._api_user, self._api_pass))
+        r.raise_for_status()
+        return r.json()
+
     def _escape(self, instr):
         return instr.replace(':', '%3A')

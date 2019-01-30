@@ -74,6 +74,26 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"add_member - Unexpected result received: {metadata['resultCode']}"))
 
+    def delete_member(self, username, groupname):
+        """ Delete user from a group
+
+        Inputs:
+          username - username of user to delete
+          groupname - target group name, ex: org:test:somegroup
+
+        Returns True on success, otherwise raises GrouperAPIError
+        """
+        try:
+            result = self._delete(f"groups/{groupname}/members/{username}")
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        metadata = result['WsDeleteMemberLiteResult']['resultMetadata']
+
+        if metadata['resultCode'] == 'SUCCESS':
+            return True
+        else:
+            raise(GrouperAPIError(f"delete_member - Unexpected result received: {metadata['resultCode']}"))
+
     def find_groups_by_stem(self, stem):
         """ Retrieve child groups associated with a stem
 
