@@ -13,7 +13,7 @@ class GrouperClient(object):
         self._api_user = user
         self._api_pass = password
         if ws_version == None:
-            self._ws_version = 'v2_2_000'
+            self._ws_version = 'v2_4_000'
         else:
             if ws_version in WS_VERSIONS:
                 self._ws_version = ws_version

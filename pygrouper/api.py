@@ -94,6 +94,32 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"delete_member - Unexpected result received: {metadata['resultCode']}"))
 
+    def save_stem(self, parent, extension, descrption):
+        name = f"{parent}:{extension}"
+        params = {
+          "WsRestStemSaveRequest":{
+            "wsStemToSaves":[
+              {
+                "wsStem":{
+                  "displayExtension": f"a stem {extension}",
+                  "extension": extension,
+                  "name": name,
+                  "description":"desc1"
+                },
+                "wsStemLookup":{
+                  "stemName": name
+                }
+              }
+            ]
+          }
+        }
+
+        try:
+            result = self._post("stems/", params)
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+
+
     def find_groups_by_stem(self, stem):
         """ Retrieve child groups associated with a stem
 
@@ -239,7 +265,7 @@ class GrouperAPI(GrouperClient):
           leftgroup - lefthand group name, ex: org:test:somegroup1
           rightgroup - righthand group name, ex: org:test:somegroup2
           composite_type - type of composite group, must be 'complement', 'intersection', 'union'
-          description - description of group
+          description - displayName of group "Some Group 2"
           newname - name of the group to create, ex: org:test:newgroup
 
         Returns True on success, otherwise raises GrouperAPIError
