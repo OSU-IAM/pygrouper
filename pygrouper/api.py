@@ -54,6 +54,35 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"get_members - Unexpected result received: {metadata['resultCode']}"))
 
+    def get_members_pit(self, groupname, pit):
+        """ Retrieve members of a group at a specific point in time
+
+        Inputs:
+          groupname - group name to query, ex: org:test:somestem
+          pit - the point in time to query formatted as 'yyyy/MM/dd HH:mm:ss.SSS'
+
+        Returns a list of subjects
+        """
+        params = {
+            'WsRestGetMembersLiteRequest': {
+                'pointInTimeFrom': pit,
+                'pointInTimeTo': pit
+            }
+        }
+        try:
+            result = self._post(f"groups/{groupname}/members", params)
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        metadata = result['WsGetMembersLiteResult']['resultMetadata']
+
+        if metadata['resultCode'] == 'SUCCESS':
+            if 'wsSubjects' in result['WsGetMembersLiteResult']:
+                return result['WsGetMembersLiteResult']['wsSubjects']
+            else:
+                return []
+        else:
+            raise(GrouperAPIError(f"get_members - Unexpected result received: {metadata['resultCode']}"))
+
     def add_member(self, username, groupname):
         """ Add user as member to group
 
