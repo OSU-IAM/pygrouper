@@ -86,7 +86,7 @@ class GrouperAPI(GrouperClient):
             else:
                 return []
         else:
-            raise(GrouperAPIError(f"get_members - Unexpected result received: {metadata['resultCode']}"))
+            raise(GrouperAPIError(f"get_members_pit - Unexpected result received: {metadata['resultCode']}"))
 
     def add_member(self, username, groupname):
         """ Add user as member to group
