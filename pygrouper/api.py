@@ -17,10 +17,7 @@ class GrouperAPI(GrouperClient):
 
         Returns True if user is in group, otherwise False
         """
-        try:
-            result = self._get(f"groups/{groupname}/members/{username}")
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._get(f"groups/{groupname}/members/{username}")
         metadata = result['WsHasMemberLiteResult']['resultMetadata']
 
         if metadata['resultCode'] == 'IS_MEMBER':
@@ -40,10 +37,7 @@ class GrouperAPI(GrouperClient):
 
         Returns a list of subjects
         """
-        try:
-            result = self._get(f"groups/{groupname}/members")
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._get(f"groups/{groupname}/members")
         metadata = result['WsGetMembersLiteResult']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -63,10 +57,7 @@ class GrouperAPI(GrouperClient):
 
         Returns True on success, otherwise raises GrouperAPIError
         """
-        try:
-            result = self._put(f"groups/{groupname}/members/{username}")
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._put(f"groups/{groupname}/members/{username}")
         metadata = result['WsAddMemberLiteResult']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -83,10 +74,7 @@ class GrouperAPI(GrouperClient):
 
         Returns True on success, otherwise raises GrouperAPIError
         """
-        try:
-            result = self._delete(f"groups/{groupname}/members/{username}")
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._delete(f"groups/{groupname}/members/{username}")
         metadata = result['WsDeleteMemberLiteResult']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -110,10 +98,7 @@ class GrouperAPI(GrouperClient):
                 }
             }
         }
-        try:
-            result = self._post('groups', params)
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._post('groups', params)
         metadata = result['WsFindGroupsResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -146,10 +131,7 @@ class GrouperAPI(GrouperClient):
                 }
             }
         }
-        try:
-            result = self._post('groups', params)
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._post('groups', params)
         metadata = result['WsFindGroupsResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -179,10 +161,7 @@ class GrouperAPI(GrouperClient):
         }
         for group in groupnames:
             params['WsRestGroupDeleteRequest']['wsGroupLookups'].append({'groupName': group})
-        try:
-            result = self._post('groups', params)
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._post('groups', params)
         metadata = result['WsGroupDeleteResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -217,10 +196,7 @@ class GrouperAPI(GrouperClient):
             }
         }
 
-        try:
-            result = self._post('groups', params)
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._post('groups', params)
         metadata = result['WsGroupSaveResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -274,10 +250,7 @@ class GrouperAPI(GrouperClient):
             }
         }
 
-        try:
-            result = self._post('groups', params)
-        except requests.exceptions.HTTPError as err:
-            raise(GrouperAPIError(err))
+        result = self._post('groups', params)
         metadata = result['WsGroupSaveResults']['resultMetadata']
 
         if metadata['resultCode'] == 'SUCCESS':
@@ -323,10 +296,7 @@ class GrouperAPI(GrouperClient):
 
         for privilege in privileges:
             params['WsRestAssignGrouperPrivilegesLiteRequest']['privilegeName'] = privilege
-            try:
-                result = self._post('grouperPrivileges', params)
-            except requests.exceptions.HTTPError as err:
-                raise(GrouperAPIError(err))
+            result = self._post('grouperPrivileges', params)
             metadata = result['WsAssignGrouperPrivilegesLiteResult']['resultMetadata']
 
             if metadata['resultCode'] not in ['SUCCESS_ALLOWED', 'SUCCESS_ALLOWED_ALREADY_EXISTED']:
