@@ -33,8 +33,8 @@ class GrouperClient(object):
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _put(self, endpoint):
@@ -44,8 +44,8 @@ class GrouperClient(object):
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _post(self, endpoint, payload=None):
@@ -63,8 +63,8 @@ class GrouperClient(object):
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _delete(self, endpoint):
@@ -74,8 +74,8 @@ class GrouperClient(object):
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _escape(self, instr):
