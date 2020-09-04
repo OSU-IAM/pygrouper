@@ -12,6 +12,6 @@ class GrouperAPIError(GrouperAPIException):
         self.message = message
 
 class GrouperAPIRequestsException(GrouperAPIException):
-    """Exception for passing errors on to the calling application"""
+    """Exception for passing errors thrown by the Requests module on to the calling application"""
     def __init__(self, message):
         self.message = message
