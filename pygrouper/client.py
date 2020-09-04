@@ -2,16 +2,22 @@
 """
 
 import requests
+from .exceptions import GrouperAPIException, GrouperAPIRequestsException, GrouperAPIError
 
 WS_VERSIONS = [
-    'v2_2_000'
+    'v2_2_000',
+    'v2_3_000',
+    'v2_4_000',
+    'v2_5_000',
 ]
 
 class GrouperClient(object):
-    def __init__(self, host, user, password, ws_version=None):
+    def __init__(self, host, user, password, ws_version=None, timeout=60):
         self._host = host
         self._api_user = user
         self._api_pass = password
+        self._timeout = timeout
+
         if ws_version == None:
             self._ws_version = 'v2_2_000'
         else:
@@ -25,14 +31,24 @@ class GrouperClient(object):
 
     def _get(self, endpoint):
         uri = self._uri(endpoint)
-        r = requests.get(uri, auth=(self._api_user, self._api_pass))
-        r.raise_for_status()
+        try:
+            r = requests.get(uri, auth=(self._api_user, self._api_pass), timeout=self._timeout)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _put(self, endpoint):
         uri = self._uri(endpoint)
-        r = requests.put(uri, auth=(self._api_user, self._api_pass))
-        r.raise_for_status()
+        try:
+            r = requests.put(uri, auth=(self._api_user, self._api_pass), timeout=self._timeout)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _post(self, endpoint, payload=None):
@@ -45,14 +61,24 @@ class GrouperClient(object):
             headers={'Content-Type': 'text/x-json'}
 
         uri = self._uri(endpoint)
-        r = requests.post(uri, auth=(self._api_user, self._api_pass), json=payload, headers=headers)
-        r.raise_for_status()
+        try:
+            r = requests.post(uri, auth=(self._api_user, self._api_pass), json=payload, headers=headers, timeout=self._timeout)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _delete(self, endpoint):
         uri = self._uri(endpoint)
-        r = requests.delete(uri, auth=(self._api_user, self._api_pass))
-        r.raise_for_status()
+        try:
+            r = requests.delete(uri, auth=(self._api_user, self._api_pass), timeout=self._timeout)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as err:
+            raise(GrouperAPIRequestsException(err))
         return r.json()
 
     def _escape(self, instr):
