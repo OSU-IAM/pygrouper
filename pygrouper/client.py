@@ -5,7 +5,10 @@ import requests
 from .exceptions import GrouperAPIException, GrouperAPIRequestsException, GrouperAPIError
 
 WS_VERSIONS = [
-    'v2_2_000'
+    'v2_2_000',
+    'v2_3_000',
+    'v2_4_000',
+    'v2_5_000',
 ]
 
 class GrouperClient(object):
