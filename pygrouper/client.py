@@ -30,24 +30,22 @@ class GrouperClient(object):
         uri = self._uri(endpoint)
         try:
             r = requests.get(uri, auth=(self._api_user, self._api_pass), timeout=self._timeout)
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
-        try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as e:
+            raise(GrouperAPIRequestsException(e))
         return r.json()
 
     def _put(self, endpoint):
         uri = self._uri(endpoint)
         try:
             r = requests.put(uri, auth=(self._api_user, self._api_pass), timeout=self._timeout)
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
-        try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as e:
+            raise(GrouperAPIRequestsException(e))
         return r.json()
 
     def _post(self, endpoint, payload=None):
@@ -62,24 +60,22 @@ class GrouperClient(object):
         uri = self._uri(endpoint)
         try:
             r = requests.post(uri, auth=(self._api_user, self._api_pass), json=payload, headers=headers, timeout=self._timeout)
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
-        try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as e:
+            raise(GrouperAPIRequestsException(e))
         return r.json()
 
     def _delete(self, endpoint):
         uri = self._uri(endpoint)
         try:
             r = requests.delete(uri, auth=(self._api_user, self._api_pass), timeout=self._timeout)
-        except requests.exceptions.RequestException as e:
-            raise(GrouperAPIRequestsException(e))
-        try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
+        except requests.exceptions.RequestException as e:
+            raise(GrouperAPIRequestsException(e))
         return r.json()
 
     def _escape(self, instr):
