@@ -55,7 +55,8 @@ class GrouperClient(object):
         if payload == None:
             payload = {}
 
-        if self._ws_version in ['v2_2_000']:
+        headers = None
+        if self._ws_version in ['v2_2_000', 'v2_3_000']:
             # override Content-Type header because Grouper WS API < v2.4 is dumb
             # and wants 'text/x-json' instead of the standard 'application/json'
             headers={'Content-Type': 'text/x-json'}
