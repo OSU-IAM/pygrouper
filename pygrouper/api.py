@@ -203,8 +203,6 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"find_stems_for_stem - Unexpected result received: {metadata['resultCode']}"))
 
-
-
     def delete_groups(self, groupnames):
         """ Delete groups
 
