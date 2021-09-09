@@ -176,6 +176,33 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"find_groups_by_name - Unexpected result received: {metadata['resultCode']}"))
 
+    def find_stems_for_stem(self, stem):
+        """ Retrieve child stems associated with a stem
+
+        Inputs:
+          stem - stem name, ex: org:test:somestem
+
+        Returns a list of stems
+        """
+        params = {
+            'WsRestFindStemsRequest': {
+                'wsStemQueryFilter': {
+                    'stemQueryFilterType': 'FIND_BY_STEM_NAME_APPROXIMATE',
+                    'stemName': stem
+                }
+            }
+        }
+        result = self._post('stems', params)
+        metadata = result['WsFindStemsResults']['resultMetadata']
+
+        if metadata['resultCode'] == 'SUCCESS':
+            if 'stemResults' in result['WsFindStemsResults']:
+                return result['WsFindStemsResults']['stemResults']
+            else:
+                return []
+        else:
+            raise(GrouperAPIError(f"find_stems_for_stem - Unexpected result received: {metadata['resultCode']}"))
+
     def delete_groups(self, groupnames):
         """ Delete groups
 
