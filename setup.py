@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pygrouper",
-    version="1.0.5",
+    version="1.0.6",
     author="OSU-IAM",
     description="Python module for working with Grouper",
     long_description=long_description,
