@@ -1,4 +1,5 @@
-""" pygrouper.client
+"""
+pygrouper.client
 """
 
 import requests
@@ -9,6 +10,7 @@ WS_VERSIONS = [
     'v2_3_000',
     'v2_4_000',
     'v2_5_000',
+    'v4_0_000',
 ]
 
 class GrouperClient(object):
@@ -40,10 +42,13 @@ class GrouperClient(object):
             raise(GrouperAPIRequestsException(err))
         return r.json()
 
-    def _put(self, endpoint):
+    # can probably modify this to take additonal params
+    def _put(self, endpoint, data=None):
+        if data == None:
+            data = {}
         uri = self._uri(endpoint)
         try:
-            r = requests.put(uri, auth=(self._api_user, self._api_pass), timeout=self._timeout)
+            r = requests.put(uri, json=data, auth=(self._api_user, self._api_pass), timeout=self._timeout)
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
