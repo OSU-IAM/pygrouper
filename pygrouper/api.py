@@ -82,22 +82,37 @@ class GrouperAPI(GrouperClient):
         else:
             raise(GrouperAPIError(f"get_members_pit - Unexpected result received: {metadata['resultCode']}"))
 
-    def add_member(self, username, groupname, data=None):
+    def add_member(self, username, groupname, extra=None):
         """ Add user as member to group
 
         Inputs:
           username - username of user to add
           groupname - target group name, ex: org:test:somegroup
-          data - optional body data in json to pass in, ex: {disableTime: '12:00pm'}
+          extra - optional body data in json to pass in, ex: {disableTime: '12:00pm'}
         Returns True on success, otherwise raises GrouperAPIError
         """
+        params= {
+            "WsRestAddMemberRequest": {
+                "wsGroupLookup": {
+                    "groupName": groupname
+                },
+                "subjectLookups": [
+                    {
+                        "subjectId": username,
+                    }
+                ]
+            }
+        }
+        # adding additional fields here
+        if extra :
+            params["WsRestAddMemberRequest"].update(extra)
 
-        if data = None:
-            data = {}
+        try:
+            result = self._post("groups",params)
+        except requests.exceptions.HTTPError as err:
+            raise(GrouperAPIError(err))
 
-        result = self._put(f"groups/{groupname}/members/{username}", data)
-        metadata = result['WsAddMemberLiteResult']['resultMetadata']
-
+        metadata = result['WsAddMemberResults']['resultMetadata']
         if metadata['resultCode'] == 'SUCCESS':
             return True
         else:

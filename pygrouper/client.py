@@ -29,7 +29,7 @@ class GrouperClient(object):
                 raise(GrouperAPIException("Invalid Grouper WS version: {ws_version}"))
 
     def _uri(self, endpoint):
-        return f"https://{self._host}/grouper-ws/servicesRest/json/{self._ws_version}/{endpoint}"
+        return f"https://{self._host}/grouper-ws/servicesRest/{self._ws_version}/{endpoint}"
 
     def _get(self, endpoint):
         uri = self._uri(endpoint)
@@ -42,13 +42,12 @@ class GrouperClient(object):
             raise(GrouperAPIRequestsException(err))
         return r.json()
 
-    # can probably modify this to take additonal params
-    def _put(self, endpoint, data=None):
-        if data == None:
-            data = {}
+    def _put(self, endpoint, payload=None):
+        if payload is None:
+            payload = {}
         uri = self._uri(endpoint)
         try:
-            r = requests.put(uri, json=data, auth=(self._api_user, self._api_pass), timeout=self._timeout)
+            r = requests.put(uri, data=payload, auth=(self._api_user, self._api_pass), timeout=self._timeout)
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise(GrouperAPIError(err))
