@@ -28,7 +28,7 @@ class GrouperAPI(GrouperClient):
         ):
             raise (
                 GrouperAPIError(
-                    "is_member - SUBJECT_NOT_FOUND error, is this user in Grouper?"
+                    "is_member - SUBJECT_NOT_FOUND error looking for '{username}' in group '{groupname}'"
                 )
             )
         elif metadata["resultCode"] == "IS_NOT_MEMBER":
