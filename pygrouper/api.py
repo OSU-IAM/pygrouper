@@ -2,10 +2,10 @@
 Methods for working with the Grouper WS API
 """
 
+import requests
+
 from .client import GrouperClient
 from .exceptions import GrouperAPIError
-
-import requests
 
 
 class GrouperAPI(GrouperClient):
@@ -23,22 +23,19 @@ class GrouperAPI(GrouperClient):
 
         if metadata["resultCode"] == "IS_MEMBER":
             return True
-        elif (
-            "resultCode2" in metadata and metadata["resultCode2"] == "SUBJECT_NOT_FOUND"
-        ):
-            raise (
-                GrouperAPIError(
-                    "is_member - SUBJECT_NOT_FOUND error looking for '{username}' in group '{groupname}'"
-                )
-            )
-        elif metadata["resultCode"] == "IS_NOT_MEMBER":
+        if metadata["resultCode"] == "IS_NOT_MEMBER":
             return False
-        else:
+        if "resultCode2" in metadata and metadata["resultCode2"] == "SUBJECT_NOT_FOUND":
             raise (
                 GrouperAPIError(
-                    f"is_member - Unexpected result received: {metadata['resultCode']}"
+                    f"is_member - SUBJECT_NOT_FOUND error looking for '{username}' in group '{groupname}'"
                 )
             )
+        raise (
+            GrouperAPIError(
+                f"is_member - Unexpected result received: {metadata['resultCode']}"
+            )
+        )
 
     def get_members(self, groupname):
         """Retrieve members of a group
@@ -54,14 +51,12 @@ class GrouperAPI(GrouperClient):
         if metadata["resultCode"] == "SUCCESS":
             if "wsSubjects" in result["WsGetMembersLiteResult"]:
                 return result["WsGetMembersLiteResult"]["wsSubjects"]
-            else:
-                return []
-        else:
-            raise (
-                GrouperAPIError(
-                    f"get_members - Unexpected result received: {metadata['resultCode']}"
-                )
+            return []
+        raise (
+            GrouperAPIError(
+                f"get_members - Unexpected result received: {metadata['resultCode']}"
             )
+        )
 
     def get_members_pit(self, groupname, pitfrom, pitto=None):
         """Retrieve members of a group at a specific point in time
@@ -86,20 +81,18 @@ class GrouperAPI(GrouperClient):
         try:
             result = self._post(f"groups/{groupname}/members", params)
         except requests.exceptions.HTTPError as err:
-            raise (GrouperAPIError(err))
+            raise GrouperAPIError(err) from err
         metadata = result["WsGetMembersLiteResult"]["resultMetadata"]
 
         if metadata["resultCode"] == "SUCCESS":
             if "wsSubjects" in result["WsGetMembersLiteResult"]:
                 return result["WsGetMembersLiteResult"]["wsSubjects"]
-            else:
-                return []
-        else:
-            raise (
-                GrouperAPIError(
-                    f"get_members_pit - Unexpected result received: {metadata['resultCode']}"
-                )
+            return []
+        raise (
+            GrouperAPIError(
+                f"get_members_pit - Unexpected result received: {metadata['resultCode']}"
             )
+        )
 
     def add_member(self, username, groupname, attributes=None):
         """Add user as member to group
@@ -127,7 +120,7 @@ class GrouperAPI(GrouperClient):
         try:
             result = self._post("groups", params)
         except requests.exceptions.HTTPError as err:
-            raise (GrouperAPIError(err))
+            raise GrouperAPIError(err) from err
 
         metadata = result["WsAddMemberResults"]["resultMetadata"]
         if metadata["resultCode"] == "SUCCESS":
@@ -152,12 +145,11 @@ class GrouperAPI(GrouperClient):
 
         if metadata["resultCode"] == "SUCCESS":
             return True
-        else:
-            raise (
-                GrouperAPIError(
-                    f"delete_member - Unexpected result received: {metadata['resultCode']}"
-                )
+        raise (
+            GrouperAPIError(
+                f"delete_member - Unexpected result received: {metadata['resultCode']}"
             )
+        )
 
     def find_groups_by_stem(self, stem):
         """Retrieve child groups associated with a stem
@@ -181,14 +173,12 @@ class GrouperAPI(GrouperClient):
         if metadata["resultCode"] == "SUCCESS":
             if "groupResults" in result["WsFindGroupsResults"]:
                 return result["WsFindGroupsResults"]["groupResults"]
-            else:
-                return []
-        else:
-            raise (
-                GrouperAPIError(
-                    f"find_groups_by_stem - Unexpected result received: {metadata['resultCode']}"
-                )
+            return []
+        raise (
+            GrouperAPIError(
+                f"find_groups_by_stem - Unexpected result received: {metadata['resultCode']}"
             )
+        )
 
     def find_groups_by_name(self, groupname, exact=None):
         """Retrieve groups by name
@@ -199,7 +189,7 @@ class GrouperAPI(GrouperClient):
 
         Returns a list of groups
         """
-        if exact == True:
+        if exact is True:
             query_filter_type = "FIND_BY_GROUP_NAME_EXACT"
         else:
             query_filter_type = "FIND_BY_GROUP_NAME_APPROXIMATE"
@@ -218,14 +208,12 @@ class GrouperAPI(GrouperClient):
         if metadata["resultCode"] == "SUCCESS":
             if "groupResults" in result["WsFindGroupsResults"]:
                 return result["WsFindGroupsResults"]["groupResults"]
-            else:
-                return []
-        else:
-            raise (
-                GrouperAPIError(
-                    f"find_groups_by_name - Unexpected result received: {metadata['resultCode']}"
-                )
+            return []
+        raise (
+            GrouperAPIError(
+                f"find_groups_by_name - Unexpected result received: {metadata['resultCode']}"
             )
+        )
 
     def find_stems_for_stem(self, stem):
         """Retrieve child stems associated with a stem
@@ -249,14 +237,12 @@ class GrouperAPI(GrouperClient):
         if metadata["resultCode"] == "SUCCESS":
             if "stemResults" in result["WsFindStemsResults"]:
                 return result["WsFindStemsResults"]["stemResults"]
-            else:
-                return []
-        else:
-            raise (
-                GrouperAPIError(
-                    f"find_stems_for_stem - Unexpected result received: {metadata['resultCode']}"
-                )
+            return []
+        raise (
+            GrouperAPIError(
+                f"find_stems_for_stem - Unexpected result received: {metadata['resultCode']}"
             )
+        )
 
     def delete_groups(self, groupnames):
         """Delete groups
@@ -268,7 +254,7 @@ class GrouperAPI(GrouperClient):
         Returns True on success, otherwise raises GrouperAPIError
         """
         if not len(groupnames) > 0:
-            raise (GrouperAPIError(f"delete_groups - No group names provided"))
+            raise GrouperAPIError("delete_groups - No group names provided")
 
         params = {"WsRestGroupDeleteRequest": {"wsGroupLookups": []}}
         for group in groupnames:
@@ -280,12 +266,11 @@ class GrouperAPI(GrouperClient):
 
         if metadata["resultCode"] == "SUCCESS":
             return True
-        else:
-            raise (
-                GrouperAPIError(
-                    f"delete_groups - Unexpected result received: {metadata['resultCode']}"
-                )
+        raise (
+            GrouperAPIError(
+                f"delete_groups - Unexpected result received: {metadata['resultCode']}"
             )
+        )
 
     def create_group(self, groupname, displayext, description):
         """Create a group
@@ -317,12 +302,10 @@ class GrouperAPI(GrouperClient):
 
         if metadata["resultCode"] == "SUCCESS":
             return True
-        else:
-            errmsg = (
-                "create_group - "
-                f"Unexpected result received: {metadata['resultCode']}"
-            )
-            raise (GrouperAPIError(errmsg))
+        errmsg = (
+            "create_group - " f"Unexpected result received: {metadata['resultCode']}"
+        )
+        raise GrouperAPIError(errmsg)
 
     def create_composite_group(
         self, *, leftgroup, rightgroup, composite_type, description, newname
@@ -371,12 +354,11 @@ class GrouperAPI(GrouperClient):
 
         if metadata["resultCode"] == "SUCCESS":
             return True
-        else:
-            errmsg = (
-                "create_composite_group - "
-                f"Unexpected result received: {metadata['resultCode']}"
-            )
-            raise (GrouperAPIError(errmsg))
+        errmsg = (
+            "create_composite_group - "
+            f"Unexpected result received: {metadata['resultCode']}"
+        )
+        raise GrouperAPIError(errmsg)
 
     def add_privilege(self, *, accessgroup, targetgroup, privileges):
         """Add privilege for a group to access target group
@@ -394,7 +376,7 @@ class GrouperAPI(GrouperClient):
         for privilege in privileges:
             if privilege not in ["read", "view", "update", "admin", "optin", "optout"]:
                 raise (
-                    GrouperAPIException(
+                    GrouperAPIError(
                         f"add_privilege - Invalid privilege name: {privilege}"
                     )
                 )
@@ -404,7 +386,7 @@ class GrouperAPI(GrouperClient):
             accessgroup_detail = ags.pop()
         else:
             raise (
-                GrouperAPIException(
+                GrouperAPIError(
                     f"add_privilege - Couldn't find access group: {accessgroup}"
                 )
             )
@@ -434,6 +416,6 @@ class GrouperAPI(GrouperClient):
                     "add_privilege - "
                     f"Unexpected result received: {metadata['resultCode']}"
                 )
-                raise (GrouperAPIError(errmsg))
+                raise GrouperAPIError(errmsg)
 
         return True

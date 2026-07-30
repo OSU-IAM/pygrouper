@@ -18,20 +18,20 @@ WS_VERSIONS = [
 ]
 
 
-class GrouperClient(object):
+class GrouperClient:
     def __init__(self, host, user, password, ws_version=None, timeout=60):
         self._host = host
         self._api_user = user
         self._api_pass = password
         self._timeout = timeout
 
-        if ws_version == None:
+        if ws_version is None:
             self._ws_version = "v2_2_000"
         else:
             if ws_version in WS_VERSIONS:
                 self._ws_version = ws_version
             else:
-                raise (GrouperAPIException("Invalid Grouper WS version: {ws_version}"))
+                raise GrouperAPIException("Invalid Grouper WS version: {ws_version}")
 
     def _uri(self, endpoint):
         return f"https://{self._host}/grouper-ws/servicesRest/json/{self._ws_version}/{endpoint}"
@@ -44,9 +44,9 @@ class GrouperClient(object):
             )
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            raise (GrouperAPIError(err))
+            raise GrouperAPIError(err) from err
         except requests.exceptions.RequestException as err:
-            raise (GrouperAPIRequestsException(err))
+            raise GrouperAPIRequestsException(err) from err
         return r.json()
 
     def _put(self, endpoint):
@@ -57,13 +57,13 @@ class GrouperClient(object):
             )
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            raise (GrouperAPIError(err))
+            raise GrouperAPIError(err) from err
         except requests.exceptions.RequestException as err:
-            raise (GrouperAPIRequestsException(err))
+            raise GrouperAPIRequestsException(err) from err
         return r.json()
 
     def _post(self, endpoint, payload=None):
-        if payload == None:
+        if payload is None:
             payload = {}
 
         headers = None
@@ -83,9 +83,9 @@ class GrouperClient(object):
             )
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            raise (GrouperAPIError(err))
+            raise GrouperAPIError(err) from err
         except requests.exceptions.RequestException as err:
-            raise (GrouperAPIRequestsException(err))
+            raise GrouperAPIRequestsException(err) from err
         return r.json()
 
     def _delete(self, endpoint):
@@ -96,9 +96,9 @@ class GrouperClient(object):
             )
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            raise (GrouperAPIError(err))
+            raise GrouperAPIError(err) from err
         except requests.exceptions.RequestException as err:
-            raise (GrouperAPIRequestsException(err))
+            raise GrouperAPIRequestsException(err) from err
         return r.json()
 
     def _escape(self, instr):
